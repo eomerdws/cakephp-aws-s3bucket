@@ -163,6 +163,20 @@ class S3Bucket
     }
 
     /**
+     * Call GetObjectUrl API
+     * NOTE: That this is not the presigned download. This is the method that is unverified
+     * @see \S3Bucket\Datasource\S3Client::getObjectUrl
+     * @see https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/s3-presigned-url.html
+     * @param string $key
+     * @param array $options
+     * @return string
+     */
+    public function getObjectUrl(string $key, array $options =[]): string
+    {
+        return $this->connection()->getObjectUrl($key, $options);
+    }
+
+    /**
      * Call HeadObject API.
      *
      * @see \S3Bucket\Datasource\S3Client::headObject

@@ -209,6 +209,28 @@ class Connection implements ConnectionInterface
     }
 
     /**
+     * Call GetObjectUrl API.
+     *
+     * @see S3Client::getObjectUrl
+     * @see https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/s3-presigned-url.html
+     * @param string $key
+     * @param array $options
+     * @return string
+     */
+    public function getObjectUrl(string $key, array $options = []): string
+    {
+        $key = $this->__keyPreProcess($key, $options);
+
+        $options += [
+            'Bucket' => $this->_config['bucketName'],
+            'Key' => $key,
+            'ACL' => $this->_config['acl'] ?? 'private',
+        ];
+
+        return $this->_s3Client->getObjectUrl($this->_config['bucketName'], $key);
+    }
+
+    /**
      * Call HeadObject API.
      *
      * @see S3Client::headObject
