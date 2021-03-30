@@ -3,10 +3,16 @@ declare(strict_types=1);
 
 namespace S3Bucket\Datasource;
 
+use Aws\Exception\MultipartUploadException;
 use Aws\Result;
+use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Aws\S3\ObjectUploader;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Utility\Hash;
+use GuzzleHttp\Psr7\Stream;
+use phpDocumentor\Reflection\Type;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
@@ -273,6 +279,45 @@ class Connection implements ConnectionInterface
         ];
 
         return $this->_s3Client->putObject($options);
+    }
+
+    /**
+     * Create a multipart upload using ObjectUploader API.
+     *
+     * @see https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/s3-multipart-upload.html
+     * @param string $key
+     * @param $content
+     * @param array $options
+     * @return Result
+     */
+    public function multiPartUpload(string $key, $content, array $options = []): Result
+    {
+        if(gettype($content) != 'string') {
+            $content = fopen($content, 'rb');
+        }
+
+        $uploader = new ObjectUploader(
+            $this->_s3Client,
+            $this->_config['bucketName'],
+            $key,
+            $content
+        );
+
+        do {
+            try {
+                $result = $uploader->upload();
+                if($result["@metadata"]["statusCode"] == '200') {
+                    return $result;
+                }
+            } catch (MultipartUploadException $e) {
+                rewind($result);
+                $uploader = new MultipartUploader($this->_s3Client, $content, [
+                    'state' => $e->getState(),
+                ]);
+            }
+        } while (!isset($result));
+
+        return $result;
     }
 
     /**

@@ -210,6 +210,21 @@ class S3Bucket
     }
 
     /**
+     * Create a multipart upload an ObjectUploader
+     *
+     * @see https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/s3-multipart-upload.html
+     * @param string $key
+     * @param $content
+     * @param array $options
+     * @return Result
+     */
+    public function multipartUpload(string $key, $content, array $options = []): Result {
+        $options['prefix'] = $options['prefix'] ?? static::$_prefix;
+
+        return $this->connection()->multiPartUpload($key, $content, $options);
+    }
+
+    /**
      * Call GetObject API and get Body attribute.
      *
      * @see \S3Bucket\Datasource\S3Client::getObject
