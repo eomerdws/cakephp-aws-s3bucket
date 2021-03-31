@@ -292,7 +292,7 @@ class Connection implements ConnectionInterface
      */
     public function multiPartUpload(string $key, $content, array $options = []): Result
     {
-        if(gettype($content) != 'string') {
+        if(gettype($content) == 'string') {
             $content = fopen($content, 'rb');
         }
 
