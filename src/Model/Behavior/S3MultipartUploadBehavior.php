@@ -20,7 +20,7 @@ class S3MultipartUploadBehavior extends Behavior
      */
     public function initialize(array $config): void
     {
-        $this->_bucket = S3BucketRegistry::init()->get($config['bucketName']);
+        $this->_bucket = S3BucketRegistry::init()->get($config['modelName']);
         parent::initialize($config);
     }
 
