@@ -14,6 +14,12 @@ use S3Bucket\Datasource\S3BucketRegistry;
 class S3MultipartUploadBehavior extends Behavior
 {
     protected $_bucket;
+    // protected $_defaultConfig = [
+    //     'keyField' => null,
+    //     'content' => null,
+    //     'modelName' => null,
+    //     'options' => []
+    // ];
 
     /**
      * @param array $config
@@ -46,11 +52,12 @@ class S3MultipartUploadBehavior extends Behavior
         $content = $entity->get($config['content']);
         $options = $entity->get($config['options']);
 
-        return $this->_bucket->multipartUpload($key, $content, $options);
+        $result = $this->_bucket->multipartUpload($key, $content, $options);
+        return $result["@metadata"]["statusCode"] == '200';
     }
 
 
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options) {
-        $this->multipartS3Upload($entity);
+        return $this->multipartS3Upload($entity);
     }
 }

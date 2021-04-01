@@ -12,7 +12,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=7.2",
-        "aws/aws-sdk-php": "^3.133",
+        "aws/aws-sdk-php": "^3.176.3",
         "cakephp/cakephp": "^4.0"
     },
     "require-dev": {

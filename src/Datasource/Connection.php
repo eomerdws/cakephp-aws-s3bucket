@@ -10,11 +10,13 @@ use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Aws\S3\ObjectUploader;
 use Cake\Datasource\ConnectionInterface;
+use Cake\Log\Log;
 use Cake\Utility\Hash;
 use GuzzleHttp\Psr7\Stream;
 use phpDocumentor\Reflection\Type;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Laminas\Diactoros\UploadedFile;
 
 /**
  * Class Connection
@@ -292,16 +294,30 @@ class Connection implements ConnectionInterface
      */
     public function multiPartUpload(string $key, $content, array $options = []): Result
     {
+        Log::debug("Multipart upload testing.");
         if(gettype($content) == 'string') {
             $content = fopen($content, 'rb');
+
+            $uploader = new ObjectUploader(
+                $this->_s3Client,
+                $this->_config['bucketName'],
+                $key,
+                $content
+            );
+        } else if (is_a($content, 'UploadedFile')) {
+            Log::debug(print_r($content));
+
+            $uploader = new ObjectUploader(
+                $this->_s3Client,
+                $this->_config['bucketName'],
+                $content->getClientFilename(),
+                $content->getStream()
+            );
+        } else {
+            Log::debug("Failed to upload to S3 Multipart Upload.");
+            return new Result(["@metadata" => ["statusCode" => '500']]);
         }
 
-        $uploader = new ObjectUploader(
-            $this->_s3Client,
-            $this->_config['bucketName'],
-            $key,
-            $content
-        );
 
         do {
             try {
@@ -314,6 +330,7 @@ class Connection implements ConnectionInterface
                 $uploader = new MultipartUploader($this->_s3Client, $content, [
                     'state' => $e->getState(),
                 ]);
+                echo $e->getMessage();
             }
         } while (!isset($result));
 

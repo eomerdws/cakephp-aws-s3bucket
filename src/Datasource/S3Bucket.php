@@ -6,6 +6,7 @@ namespace S3Bucket\Datasource;
 use Aws\Result;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
+use Cake\Log\Log;
 use GuzzleHttp\Psr7\Stream;
 
 /**
@@ -220,8 +221,9 @@ class S3Bucket
      */
     public function multipartUpload(string $key, $content, array $options = []): Result {
         $options['prefix'] = $options['prefix'] ?? static::$_prefix;
-
-        return $this->connection()->multiPartUpload($key, $content, $options);
+        $result = $this->connection()->multiPartUpload($key, $content, $options);
+        Log::debug(print_r($result));
+        return $result;
     }
 
     /**
