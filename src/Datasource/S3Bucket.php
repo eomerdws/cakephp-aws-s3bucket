@@ -222,7 +222,7 @@ class S3Bucket
     public function multipartUpload(string $key, $content, array $options = []): Result {
         $options['prefix'] = $options['prefix'] ?? static::$_prefix;
         $result = $this->connection()->multiPartUpload($key, $content, $options);
-        Log::debug(print_r($result));
+        Log::warning(print_r($result));
         return $result;
     }
 

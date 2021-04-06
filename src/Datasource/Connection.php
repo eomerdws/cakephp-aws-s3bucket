@@ -53,6 +53,13 @@ class Connection implements ConnectionInterface
             throw new \InvalidArgumentException('Config "bucketName" or "client.region" missing.');
         }
 
+        Log::setConfig('aws-s3bucket', [
+           'className' => 'File',
+           'path' => LOGS,
+           'levels' => [],
+           'file' => 'aws-s3bucket.log'
+        ]);
+
         $this->_config = $config;
         $this->_s3Client = $this->_getS3Client($config);
         $this->_s3Client->registerStreamWrapper();
@@ -294,7 +301,7 @@ class Connection implements ConnectionInterface
      */
     public function multiPartUpload(string $key, $content, array $options = []): Result
     {
-        Log::debug("Multipart upload testing.");
+        Log::warning("Multipart upload testing.");
         if(gettype($content) == 'string') {
             $content = fopen($content, 'rb');
 
@@ -305,7 +312,7 @@ class Connection implements ConnectionInterface
                 $content
             );
         } else if (is_a($content, 'UploadedFile')) {
-            Log::debug(print_r($content));
+            Log::warning(print_r($content));
 
             $uploader = new ObjectUploader(
                 $this->_s3Client,
@@ -314,7 +321,7 @@ class Connection implements ConnectionInterface
                 $content->getStream()
             );
         } else {
-            Log::debug("Failed to upload to S3 Multipart Upload.");
+            Log::warning("Failed to upload to S3 Multipart Upload.");
             return new Result(["@metadata" => ["statusCode" => '500']]);
         }
 
@@ -330,7 +337,7 @@ class Connection implements ConnectionInterface
                 $uploader = new MultipartUploader($this->_s3Client, $content, [
                     'state' => $e->getState(),
                 ]);
-                echo $e->getMessage();
+                Log::warning($e->getMessage());
             }
         } while (!isset($result));
 
