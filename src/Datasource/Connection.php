@@ -231,6 +231,24 @@ class Connection implements ConnectionInterface
     }
 
     /**
+     * Call createPresignedRequest
+     * @param string $key
+     * @param array $options
+     * @return string|null
+     */
+    public function getPresignedUrl(string $key, array $options = []): ?string
+    {
+        $key = $this->__keyPreProcess($key, $options);
+        $cmd = $this->_s3Client->getCommand('GetObject', [
+           'Bucket' => $this->_config['bucketName'],
+           'Key' => $key
+        ]);
+
+        $request = $this->_s3Client->createPresignedRequest($cmd, $this->_config['timeLimit']);
+        return (string)$request->getUri();
+    }
+
+    /**
      * Call HeadObject API.
      *
      * @see S3Client::headObject

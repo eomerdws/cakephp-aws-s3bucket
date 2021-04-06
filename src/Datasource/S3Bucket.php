@@ -177,6 +177,18 @@ class S3Bucket
     }
 
     /**
+     * Call createPresignedRequest API
+     *
+     * @param string $key
+     * @param array $options
+     * @return string
+     */
+    public function getPresignedUrl(string $key, array $options = []): string
+    {
+        return $this->connection()->getPresignedUrl($key, $options);
+    }
+
+    /**
      * Call HeadObject API.
      *
      * @see \S3Bucket\Datasource\S3Client::headObject

@@ -25,6 +25,7 @@ For example:
         'className'  => 'S3Bucket\Datasource\Connection',
         'bucketName' => 'name_of_s3_bucket',
         'acl'        => 'public-read', // if object set to public access (default set to private)
+        'timeLimit'  => '+20 minutes', // time limit for pre-signed urls
         'client'     => [
             'region' => 'name_of_region',
         ],
@@ -78,6 +79,12 @@ $sampleOfS3BucketModel->putObject(`object_key`, file_get_contents(`filename_for_
 
 // getObject
 $sampleOfS3BucketModel->getObject(`object_key`);
+
+// getObjectUrl
+$sampleOfS3BucketModel->getObjectUrl('object_key');
+
+// createPresignedRequest
+$sampleOfS3BucketModel->getPresignedUrl('object_key');
 
 // getObjectBody
 $sampleOfS3BucketModel->getObjectBody(`object_key`);
