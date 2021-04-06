@@ -232,6 +232,7 @@ class Connection implements ConnectionInterface
 
     /**
      * Call createPresignedRequest
+     * @see https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/s3-presigned-url.html
      * @param string $key
      * @param array $options
      * @return string|null
